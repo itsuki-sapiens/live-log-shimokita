@@ -1,6 +1,739 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LIVE LOG</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #f0ede8;
+      --red: #e8383d;
+      --gray: #1a1a1a;
+      --muted: #555;
+    }
+
+```
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+}
+
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #222;
+  position: sticky;
+  top: 0;
+  background: var(--black);
+  z-index: 100;
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: var(--white);
+}
+
+.logo span { color: var(--red); }
+
+.logo-area {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #555;
+  border: 1px solid #333;
+  padding: 2px 8px;
+  margin-left: 6px;
+  vertical-align: middle;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 700;
+}
+
+nav {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+nav a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+nav a:hover { color: var(--white); }
+
+/* HERO */
+.hero {
+  padding: 60px 24px 40px;
+  border-bottom: 1px solid #222;
+  animation: fadeUp 0.6s ease both;
+}
+
+.hero-label {
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--red);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 12vw, 88px);
+  line-height: 0.95;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.hero h1 em {
+  color: var(--red);
+  font-style: normal;
+}
+
+.hero p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 320px;
+}
+
+.hero-concepts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.concept {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.concept span {
+  font-size: 20px;
+  width: 32px;
+  text-align: center;
+}
+
+.concept strong {
+  display: block;
+  font-size: 14px;
+  color: var(--white);
+  letter-spacing: 1px;
+}
+
+.concept small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* VENUE FILTER */
+.filter-bar {
+  padding: 16px 24px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid #222;
+}
+
+.filter-bar::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border: 1px solid #333;
+  border-radius: 2px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: none;
+}
+
+.chip.active, .chip:hover {
+  border-color: var(--red);
+  color: var(--white);
+  background: #1a0a0a;
+}
+
+/* EVENT CARDS */
+.section-title {
+  padding: 24px 24px 12px;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+}
+
+.card {
+  border-bottom: 1px solid #1c1c1c;
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 16px;
+  align-items: start;
+  animation: fadeUp 0.5s ease both;
+  transition: background 0.2s;
+}
+
+.card:hover { background: #111; }
+
+.card-date {
+  text-align: center;
+  padding-top: 2px;
+}
+
+.card-date .day {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--white);
+}
+
+.card-date .month {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.card-body {}
+
+.card-venue {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.card-performers {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.card-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 10px;
+  color: #444;
+}
+
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.btn-listen {
+  background: #1DB954;
+  color: #000;
+  border: none;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-review {
+  background: none;
+  border: 1px solid #333;
+  color: var(--muted);
+  padding: 6px 12px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.btn-review:hover {
+  border-color: var(--white);
+  color: var(--white);
+}
+
+.rating-stars {
+  font-size: 11px;
+  color: #f5c518;
+}
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #111;
+  border-top: 1px solid #222;
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0 20px;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.nav-item.active { color: var(--red); }
+
+.nav-icon { font-size: 18px; }
+
+/* SPACER */
+.spacer { height: 80px; }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.10s; }
+.card:nth-child(3) { animation-delay: 0.15s; }
+.card:nth-child(4) { animation-delay: 0.20s; }
+```
+
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+
+  <header>
+    <div class="logo"><span>LIVE</span> LOG <span class="logo-area">下北沢</span></div>
+    <nav>
+      <a href="#">ログイン</a>
+      <a href="#">登録</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+
+  <section class="hero">
+    <div class="hero-label">📍 下北沢</div>
+    <h1>LIVE<br><em>LOG</em></h1>
+    <div class="hero-concepts">
+      <div class="concept"><span>🔍</span><div><strong>検索</strong><small>行きたいライブを探す</small></div></div>
+      <div class="concept"><span>📝</span><div><strong>記録</strong><small>観たライブを残す</small></div></div>
+      <div class="concept"><span>🔗</span><div><strong>シェア</strong><small>体験を仲間と共有</small></div></div>
+    </div>
+  </section>
+
+  <!-- VENUE FILTER -->
+
+  <div class="filter-bar">
+    <button class="chip active">すべて</button>
+    <button class="chip">SHELTER</button>
+    <button class="chip">CLUB Que</button>
+    <button class="chip">CLUB 251</button>
+    <button class="chip">ERA</button>
+    <button class="chip">BASEMENT BAR</button>
+    <button class="chip">THREE</button>
+    <button class="chip">DaisyBar</button>
+    <button class="chip">LIVEHOLIC</button>
+    <button class="chip">MOSAiC</button>
+    <button class="chip">近道</button>
+  </div>
+
+  <!-- EVENT LIST -->
+
+  <div class="section-title">今週のライブ</div>
+  <div class="cards">
+
+```
+<div class="card">
+  <div class="card-date">
+    <div class="day">08</div>
+    <div class="month">MAR</div>
+  </div>
+  <div class="card-body">
+    <div class="card-venue">SHELTER</div>
+    <div class="card-title">春告鳥ツアー2026 東京</div>
+    <div class="card-performers">ねぐせ。/ パピプペポはぴぴぴ</div>
+    <div class="card-meta">
+      <span>OPEN 18:00</span>
+      <span>START 19:00</span>
+      <span>¥3,000</span>
+    </div>
+  </div>
+  <div class="card-actions">
+    <button class="btn-listen">▶ Listen</button>
+    <button class="btn-review">★ レビュー</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-date">
+    <div class="day">09</div>
+    <div class="month">MAR</div>
+  </div>
+  <div class="card-body">
+    <div class="card-venue">CLUB Que</div>
+    <div class="card-title">Que 35th Anniversary Night</div>
+    <div class="card-performers">THE BACK HORN / locofrank</div>
+    <div class="card-meta">
+      <span>OPEN 17:30</span>
+      <span>START 18:30</span>
+      <span>¥4,500</span>
+    </div>
+  </div>
+  <div class="card-actions">
+    <button class="btn-listen">▶ Listen</button>
+    <button class="btn-review">★ レビュー</button>
+    <div class="rating-stars">★★★★☆ <span style="color:#555;font-size:10px">4.2</span></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-date">
+    <div class="day">10</div>
+    <div class="month">MAR</div>
+  </div>
+  <div class="card-body">
+    <div class="card-venue">ERA</div>
+    <div class="card-title">深夜の轟音祭り vol.12</div>
+    <div class="card-performers">illion / Yogee New Waves</div>
+    <div class="card-meta">
+      <span>OPEN 23:00</span>
+      <span>START 23:30</span>
+      <span>¥2,500</span>
+    </div>
+  </div>
+  <div class="card-actions">
+    <button class="btn-listen">▶ Listen</button>
+    <button class="btn-review">★ レビュー</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-date">
+    <div class="day">11</div>
+    <div class="month">MAR</div>
+  </div>
+  <div class="card-body">
+    <div class="card-venue">BASEMENT BAR</div>
+    <div class="card-title">Monday Night Session</div>
+    <div class="card-performers">君島大空 / 彼女 in the display</div>
+    <div class="card-meta">
+      <span>OPEN 19:00</span>
+      <span>START 19:30</span>
+      <span>¥2,000</span>
+    </div>
+  </div>
+  <div class="card-actions">
+    <button class="btn-listen">▶ Listen</button>
+    <button class="btn-review">★ レビュー</button>
+    <div class="rating-stars">★★★★★ <span style="color:#555;font-size:10px">5.0</span></div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <div class="spacer"></div>
+
+  <!-- FLYER PAGE -->
+
+  <div id="page-flyer" style="display:none; padding: 24px; animation: fadeUp 0.4s ease both;">
+    <div class="section-title" style="padding: 0 0 20px;">偶然の出会い</div>
+
+```
+<div id="flyer-card" style="
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  animation: fadeUp 0.4s ease both;
+">
+  <div id="flyer-img" style="
+    height: 340px;
+    background: linear-gradient(135deg, #1a0a0a 0%, #0a0a1a 50%, #0a1a0a 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  ">
+    <div style="
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        45deg, transparent, transparent 20px,
+        rgba(255,255,255,0.02) 20px, rgba(255,255,255,0.02) 21px
+      );
+    "></div>
+    <div id="flyer-venue" style="font-size:10px; letter-spacing:3px; color:var(--red);">BASEMENT BAR</div>
+    <div id="flyer-title" style="font-family:'Bebas Neue',sans-serif; font-size:36px; text-align:center; line-height:1.1; padding: 0 20px;">Monday Night<br>Session</div>
+    <div id="flyer-date-big" style="font-size:12px; color:#666; letter-spacing:2px;">MAR 11, 2026</div>
+    <div id="flyer-artists" style="font-size:13px; color:#aaa; text-align:center;">君島大空 / 彼女 in the display</div>
+    <div id="flyer-price" style="
+      margin-top: 8px;
+      border: 1px solid #333;
+      padding: 4px 16px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #666;
+    ">¥2,000</div>
+  </div>
+
+  <div style="padding: 16px; display:flex; gap:10px;">
+    <button class="btn-listen" style="flex:1; padding:10px;">▶ Listen</button>
+    <button class="btn-review" style="flex:1; padding:10px;">★ 気になる</button>
+  </div>
+</div>
+
+<button onclick="nextFlyer()" style="
+  width: 100%;
+  padding: 16px;
+  background: none;
+  border: 1px solid #333;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+" onmouseover="this.style.borderColor='#e8383d';this.style.color='#f0ede8'"
+   onmouseout="this.style.borderColor='#333';this.style.color='#555'">
+  NEXT → 次のライブ
+</button>
+```
+
+  </div>
+
+  <!-- LOG PAGE -->
+
+  <div id="page-log" style="display:none; padding:24px; animation: fadeUp 0.4s ease both;">
+    <div class="section-title" style="padding: 0 0 20px;">マイ記録</div>
+    <div style="text-align:center; color:var(--muted); padding: 60px 0; font-size:13px; line-height:2;">
+      📝<br>ログインすると<br>観たライブを記録できます
+    </div>
+  </div>
+
+  <!-- SHARE PAGE (タイムライン) -->
+
+  <div id="page-share" style="display:none; animation: fadeUp 0.4s ease both;">
+    <div style="padding: 20px 24px 12px; border-bottom: 1px solid #1c1c1c; display:flex; justify-content:space-between; align-items:center;">
+      <div style="font-size:10px; letter-spacing:4px; color:var(--muted);">みんなの記録</div>
+      <div style="font-size:10px; color:var(--red); letter-spacing:1px;">最新順 ▾</div>
+    </div>
+
+```
+<!-- タイムライン投稿 -->
+<div style="display:flex; flex-direction:column;">
+
+  <!-- 投稿1 -->
+  <div style="padding:16px 24px; border-bottom:1px solid #1c1c1c;">
+    <div style="display:flex; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#e8383d,#a0001a); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px;">🎸</div>
+      <div style="flex:1;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span style="font-size:12px; font-weight:700;">shimo_junki</span>
+          <span style="font-size:10px; color:var(--muted);">2時間前</span>
+        </div>
+        <div style="font-size:10px; color:var(--red); letter-spacing:1px; margin-bottom:4px;">SHELTER · MAR 08</div>
+        <div style="font-size:13px; font-weight:700; margin-bottom:6px;">春告鳥ツアー2026 東京</div>
+        <div style="font-size:12px; color:#aaa; line-height:1.7; margin-bottom:10px;">ねぐせ。の新曲がやばすぎた。アンコール3回はじめて見た。前方エリアで観れて最高の夜でした🔥</div>
+        <div style="background:#111; border:1px solid #222; padding:10px 12px; border-radius:2px; margin-bottom:10px;">
+          <div style="font-size:9px; letter-spacing:2px; color:var(--muted); margin-bottom:6px;">SETLIST</div>
+          <div style="font-size:11px; color:#888; line-height:1.8;">1. 春の嵐　2. ループする夜　3. サヨナラまで　4. 新曲（タイトル未定）　5. ...</div>
+        </div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div style="color:#f5c518; font-size:13px;">★★★★★</div>
+          <div style="font-size:11px; color:var(--muted);">5.0</div>
+          <div style="margin-left:auto; display:flex; gap:14px;">
+            <button style="background:none; border:none; color:var(--muted); font-size:11px; cursor:pointer;">♡ 12</button>
+            <button style="background:none; border:none; color:var(--muted); font-size:11px; cursor:pointer;">💬 3</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 投稿2 -->
+  <div style="padding:16px 24px; border-bottom:1px solid #1c1c1c;">
+    <div style="display:flex; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#1DB954,#006622); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px;">🎵</div>
+      <div style="flex:1;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span style="font-size:12px; font-weight:700;">liveholic_nana</span>
+          <span style="font-size:10px; color:var(--muted);">5時間前</span>
+        </div>
+        <div style="font-size:10px; color:var(--red); letter-spacing:1px; margin-bottom:4px;">BASEMENT BAR · MAR 07</div>
+        <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Monday Night Session</div>
+        <div style="font-size:12px; color:#aaa; line-height:1.7; margin-bottom:10px;">君島大空の弾き語り、息をのんだ。小さいハコで観るのが一番好き。また来週も来ます。</div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div style="color:#f5c518; font-size:13px;">★★★★☆</div>
+          <div style="font-size:11px; color:var(--muted);">4.0</div>
+          <div style="margin-left:auto; display:flex; gap:14px;">
+            <button style="background:none; border:none; color:var(--muted); font-size:11px; cursor:pointer;">♡ 28</button>
+            <button style="background:none; border:none; color:var(--muted); font-size:11px; cursor:pointer;">💬 7</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 投稿3 -->
+  <div style="padding:16px 24px; border-bottom:1px solid #1c1c1c;">
+    <div style="display:flex; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#4a4a8a,#1a1a3a); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px;">🌙</div>
+      <div style="flex:1;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span style="font-size:12px; font-weight:700;">era_midnight</span>
+          <span style="font-size:10px; color:var(--muted);">昨日</span>
+        </div>
+        <div style="font-size:10px; color:var(--red); letter-spacing:1px; margin-bottom:4px;">ERA · MAR 06</div>
+        <div style="font-size:13px; font-weight:700; margin-bottom:6px;">深夜の轟音祭り vol.11</div>
+        <div style="font-size:12px; color:#aaa; line-height:1.7; margin-bottom:10px;">深夜2時まで爆音で踊り続けた。ERAの音響は本当に最高。Yogeeのライブは何回観ても飽きない。</div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div style="color:#f5c518; font-size:13px;">★★★★★</div>
+          <div style="font-size:11px; color:var(--muted);">5.0</div>
+          <div style="margin-left:auto; display:flex; gap:14px;">
+            <button style="background:none; border:none; color:var(--muted); font-size:11px; cursor:pointer;">♡ 41</button>
+            <button style="background:none; border:none; color:var(--muted); font-size:11px; cursor:pointer;">💬 11</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="showTab('live')">
+      <div class="nav-icon">🎸</div>
+      <div>ライブ</div>
+    </div>
+    <div class="nav-item" onclick="showTab('flyer')">
+      <div class="nav-icon">🎴</div>
+      <div>フライヤー</div>
+    </div>
+    <div class="nav-item" onclick="showTab('log')">
+      <div class="nav-icon">📝</div>
+      <div>記録</div>
+    </div>
+    <div class="nav-item" onclick="showTab('share')">
+      <div class="nav-icon">👥</div>
+      <div>みんな</div>
+    </div>
+  </nav>
+
+  <script>
+    // チップのフィルター切り替え
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      });
+    });
+
+    // タブ切り替え
+    const pages = {
+      live: document.querySelector('.cards'),
+      flyer: document.getElementById('page-flyer'),
+      log: document.getElementById('page-log'),
+      share: document.getElementById('page-share'),
+    };
+    const liveExtras = [
+      document.querySelector('.filter-bar'),
+      document.querySelector('.section-title'),
+      document.querySelector('.hero'),
+    ];
+
+    function showTab(tab) {
+      // ナビのactive切り替え
+      document.querySelectorAll('.nav-item').forEach((el, i) => {
+        el.classList.toggle('active', ['live','flyer','log','share'][i] === tab);
+      });
+      // ページ切り替え
+      Object.keys(pages).forEach(key => {
+        if (pages[key]) pages[key].style.display = key === tab ? '' : 'none';
+      });
+      // ライブ専用要素の表示切り替え
+      liveExtras.forEach(el => {
+        if (el) el.style.display = tab === 'live' ? '' : 'none';
+      });
+    }
+
+    // フライヤーデータ（ダミー）
+    const flyers = [
+      { venue:'SHELTER', title:'春告鳥ツアー\n2026 東京', date:'MAR 08, 2026', artists:'ねぐせ。/ パピプペポはぴぴぴ', price:'¥3,000', bg:'linear-gradient(135deg,#1a0505,#0a0a1a)' },
+      { venue:'CLUB Que', title:'Que 35th\nAnniversary', date:'MAR 09, 2026', artists:'THE BACK HORN / locofrank', price:'¥4,500', bg:'linear-gradient(135deg,#0a0a1a,#1a1a05)' },
+      { venue:'ERA', title:'深夜の轟音祭り\nvol.12', date:'MAR 10, 2026', artists:'illion / Yogee New Waves', price:'¥2,500', bg:'linear-gradient(135deg,#0a1a0a,#1a0a1a)' },
+      { venue:'BASEMENT BAR', title:'Monday Night\nSession', date:'MAR 11, 2026', artists:'君島大空 / 彼女 in the display', price:'¥2,000', bg:'linear-gradient(135deg,#1a0a0a,#0a0a1a)' },
+      { venue:'LIVEHOLIC', title:'New Voices\nvol.8', date:'MAR 12, 2026', artists:'mol-74 / Bialystocks', price:'¥3,500', bg:'linear-gradient(135deg,#0a1a1a,#1a0505)' },
+      { venue:'THREE', title:'夜想曲\n〜夜の詩〜', date:'MAR 13, 2026', artists:'tofubeats / 羊文学', price:'¥3,000', bg:'linear-gradient(135deg,#05051a,#1a0a05)' },
+    ];
+
+    let currentFlyer = 0;
+
+    function nextFlyer() {
+      currentFlyer = (currentFlyer + 1) % flyers.length;
+      const f = flyers[currentFlyer];
+      const card = document.getElementById('flyer-card');
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(12px)';
+      setTimeout(() => {
+        document.getElementById('flyer-venue').textContent = f.venue;
+        document.getElementById('flyer-title').innerHTML = f.title.replace('\n','<br>');
+        document.getElementById('flyer-date-big').textContent = f.date;
+        document.getElementById('flyer-artists').textContent = f.artists;
+        document.getElementById('flyer-price').textContent = f.price;
+        document.getElementById('flyer-img').style.background = f.bg;
+        card.style.transition = 'all 0.35s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 200);
+    }
+  </script>
+
+</body>
+</html>
