@@ -379,97 +379,7 @@ nav a:hover { color: var(--white); }
   <!-- EVENT LIST -->
 
   <div class="section-title">今週のライブ</div>
-  <div class="cards">
-
-```
-<div class="card">
-  <div class="card-date">
-    <div class="day">08</div>
-    <div class="month">MAR</div>
-  </div>
-  <div class="card-body">
-    <div class="card-venue">SHELTER</div>
-    <div class="card-title">春告鳥ツアー2026 東京</div>
-    <div class="card-performers">ねぐせ。/ パピプペポはぴぴぴ</div>
-    <div class="card-meta">
-      <span>OPEN 18:00</span>
-      <span>START 19:00</span>
-      <span>¥3,000</span>
-    </div>
-  </div>
-  <div class="card-actions">
-    <button class="btn-listen">▶ Listen</button>
-    <button class="btn-review">★ レビュー</button>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-date">
-    <div class="day">09</div>
-    <div class="month">MAR</div>
-  </div>
-  <div class="card-body">
-    <div class="card-venue">CLUB Que</div>
-    <div class="card-title">Que 35th Anniversary Night</div>
-    <div class="card-performers">THE BACK HORN / locofrank</div>
-    <div class="card-meta">
-      <span>OPEN 17:30</span>
-      <span>START 18:30</span>
-      <span>¥4,500</span>
-    </div>
-  </div>
-  <div class="card-actions">
-    <button class="btn-listen">▶ Listen</button>
-    <button class="btn-review">★ レビュー</button>
-    <div class="rating-stars">★★★★☆ <span style="color:#555;font-size:10px">4.2</span></div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-date">
-    <div class="day">10</div>
-    <div class="month">MAR</div>
-  </div>
-  <div class="card-body">
-    <div class="card-venue">ERA</div>
-    <div class="card-title">深夜の轟音祭り vol.12</div>
-    <div class="card-performers">illion / Yogee New Waves</div>
-    <div class="card-meta">
-      <span>OPEN 23:00</span>
-      <span>START 23:30</span>
-      <span>¥2,500</span>
-    </div>
-  </div>
-  <div class="card-actions">
-    <button class="btn-listen">▶ Listen</button>
-    <button class="btn-review">★ レビュー</button>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-date">
-    <div class="day">11</div>
-    <div class="month">MAR</div>
-  </div>
-  <div class="card-body">
-    <div class="card-venue">BASEMENT BAR</div>
-    <div class="card-title">Monday Night Session</div>
-    <div class="card-performers">君島大空 / 彼女 in the display</div>
-    <div class="card-meta">
-      <span>OPEN 19:00</span>
-      <span>START 19:30</span>
-      <span>¥2,000</span>
-    </div>
-  </div>
-  <div class="card-actions">
-    <button class="btn-listen">▶ Listen</button>
-    <button class="btn-review">★ レビュー</button>
-    <div class="rating-stars">★★★★★ <span style="color:#555;font-size:10px">5.0</span></div>
-  </div>
-</div>
-```
-
-  </div>
+  <div class="cards"></div>
 
   <div class="spacer"></div>
 
@@ -667,6 +577,72 @@ nav a:hover { color: var(--white); }
   </nav>
 
   <script>
+    // Supabase設定
+    const SUPABASE_URL = 'https://ysthvobkybiclexikwlq.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzdGh2b2JreWJpY2xleGlrd2xxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyNjYyMDMsImV4cCI6MjA1Njg0MjIwM30.s3XMpHPMUQV6FBOkFcXjGq4pOKmDHxBATnGMKfg6bYI';
+
+    // イベント一覧を取得して表示
+    async function loadEvents(venueFilter = null) {
+      const cardsEl = document.querySelector('.cards');
+      cardsEl.innerHTML = '<div style="padding:40px 24px; text-align:center; color:var(--muted); font-size:13px;">読み込み中...</div>';
+
+      let url = `${SUPABASE_URL}/rest/v1/events?select=*,venues(name)&order=event_date.asc`;
+      if (venueFilter) {
+        url += `&venues.slug=eq.${venueFilter}`;
+      }
+
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          }
+        });
+        const events = await res.json();
+
+        if (!events.length) {
+          cardsEl.innerHTML = '<div style="padding:40px 24px; text-align:center; color:var(--muted); font-size:13px;">イベントがありません</div>';
+          return;
+        }
+
+        cardsEl.innerHTML = events.map((ev, i) => {
+          const date = new Date(ev.event_date);
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = date.toLocaleString('en', { month: 'short' }).toUpperCase();
+          const performers = Array.isArray(ev.performers) ? ev.performers.join(' / ') : (ev.performers || '');
+          const venueName = ev.venues?.name?.replace('下北沢', '') || '';
+
+          return `
+          <div class="card" style="animation-delay:${i * 0.05}s">
+            <div class="card-date">
+              <div class="day">${day}</div>
+              <div class="month">${month}</div>
+            </div>
+            <div class="card-body">
+              <div class="card-venue">${venueName}</div>
+              <div class="card-title">${ev.title}</div>
+              <div class="card-performers">${performers}</div>
+              <div class="card-meta">
+                ${ev.open_time ? `<span>OPEN ${ev.open_time.slice(0,5)}</span>` : ''}
+                ${ev.start_time ? `<span>START ${ev.start_time.slice(0,5)}</span>` : ''}
+                ${ev.price_door ? `<span>¥${ev.price_door.toLocaleString()}</span>` : ''}
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn-listen">▶ Listen</button>
+              <button class="btn-review">★ レビュー</button>
+            </div>
+          </div>`;
+        }).join('');
+
+      } catch(e) {
+        cardsEl.innerHTML = '<div style="padding:40px 24px; text-align:center; color:var(--muted); font-size:13px;">データの取得に失敗しました</div>';
+      }
+    }
+
+    // 初回読み込み
+    loadEvents();
+
     // チップのフィルター切り替え
     document.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
